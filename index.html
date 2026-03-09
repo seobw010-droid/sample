@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coding — 말로 만드는 코드의 시대</title>
+    <style>
+        /* ========== RESET & BASE ========== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6C3CE1;
+            --primary-light: #8B5CF6;
+            --primary-dark: #4C1D95;
+            --accent: #06D6A0;
+            --accent-dark: #05B384;
+            --bg-dark: #0B0D17;
+            --bg-card: #131527;
+            --bg-card-hover: #1A1D35;
+            --text-primary: #F1F1F6;
+            --text-secondary: #9CA3AF;
+            --text-dim: #6B7280;
+            --gradient-1: linear-gradient(135deg, #6C3CE1, #06D6A0);
+            --gradient-2: linear-gradient(135deg, #6C3CE1, #EC4899);
+            --gradient-3: linear-gradient(135deg, #06D6A0, #3B82F6);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 4px 30px rgba(108, 60, 225, 0.15);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        /* ========== UTILITY ========== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-2 {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            line-height: 1.8;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(108, 60, 225, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 60, 225, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary-light);
+            background: rgba(108, 60, 225, 0.1);
+        }
+
+        /* ========== ANIMATED BACKGROUND BLOBS ========== */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ========== NAVBAR ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(11, 13, 23, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: var(--gradient-1);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .mobile-toggle span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            overflow: hidden;
+        }
+
+        .hero .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: var(--primary);
+            top: -200px;
+            right: -200px;
+        }
+
+        .hero .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 580px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 50px;
+            background: rgba(108, 60, 225, 0.15);
+            border: 1px solid rgba(108, 60, 225, 0.3);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 24px;
+        }
+
+        .hero-badge .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Terminal Window */
+        .terminal {
+            width: 100%;
+            max-width: 520px;
+            background: #0D1117;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 80px rgba(108, 60, 225, 0.1);
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #FF5F57; }
+        .terminal-dot.yellow { background: #FEBC2E; }
+        .terminal-dot.green { background: #28C840; }
+
+        .terminal-title {
+            margin-left: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .terminal-body {
+            padding: 24px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.9;
+            min-height: 280px;
+        }
+
+        .terminal-line {
+            margin-bottom: 4px;
+            opacity: 0;
+            animation: fadeInLine 0.5s forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(2) { animation-delay: 1.5s; }
+        .terminal-line:nth-child(3) { animation-delay: 2.5s; }
+        .terminal-line:nth-child(4) { animation-delay: 3.2s; }
+        .terminal-line:nth-child(5) { animation-delay: 4s; }
+        .terminal-line:nth-child(6) { animation-delay: 4.8s; }
+        .terminal-line:nth-child(7) { animation-delay: 5.5s; }
+        .terminal-line:nth-child(8) { animation-delay: 6.2s; }
+
+        @keyframes fadeInLine {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .t-prompt { color: var(--accent); }
+        .t-user { color: var(--primary-light); }
+        .t-ai { color: #FEBC2E; }
+        .t-comment { color: var(--text-dim); }
+        .t-string { color: #98C379; }
+        .t-keyword { color: #C678DD; }
+        .t-func { color: #61AFEF; }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--accent);
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Floating particles around terminal */
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            animation: floatIcon 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        .floating-icon:nth-child(1) { top: -20px; right: -10px; animation-delay: 0s; }
+        .floating-icon:nth-child(2) { bottom: 20px; left: -30px; animation-delay: 2s; }
+        .floating-icon:nth-child(3) { top: 40%; right: -40px; animation-delay: 4s; }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* ========== STATS BAR ========== */
+        .stats-bar {
+            position: relative;
+            z-index: 1;
+            padding: 60px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat-item p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ========== WHAT IS SECTION ========== */
+        .what-is {
+            position: relative;
+            padding: 120px 0;
+            overflow: hidden;
+        }
+
+        .what-is .blob {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: 50%;
+            left: -200px;
+            transform: translateY(-50%);
+        }
+
+        .what-is .container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .what-is-visual {
+            position: relative;
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 32px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .comparison-card:hover {
+            border-color: rgba(108, 60, 225, 0.3);
+            transform: translateX(8px);
+        }
+
+        .comparison-card .card-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .comparison-card.old .card-label { color: var(--text-dim); }
+        .comparison-card.new .card-label { color: var(--accent); }
+
+        .comparison-card .card-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .comparison-card.new {
+            border-color: rgba(6, 214, 160, 0.2);
+            background: linear-gradient(135deg, rgba(6, 214, 160, 0.05), rgba(108, 60, 225, 0.05));
+        }
+
+        .arrow-between {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 8px 0;
+        }
+
+        /* ========== HOW IT WORKS ========== */
+        .how-it-works {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        .how-it-works .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .how-it-works .section-desc {
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .step-card {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 40px 32px;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .step-card:hover {
+            border-color: rgba(108, 60, 225, 0.2);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+        }
+
+        .step-card:hover::before {
+            opacity: 1;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(108, 60, 225, 0.12);
+            color: var(--primary-light);
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+        }
+
+        .step-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .step-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .step-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        /* ========== TOOLS SECTION ========== */
+        .tools {
+            padding: 120px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tools .blob {
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            bottom: -100px;
+            right: -100px;
+        }
+
+        .tools .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .tools .section-desc {
+            margin: 0 auto;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 36px 28px;
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        .tool-card:hover {
+            border-color: rgba(108, 60, 225, 0.3);
+            transform: translateY(-6px);
+            background: var(--bg-card-hover);
+        }
+
+        .tool-logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+        }
+
+        .tool-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .tool-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tool-tag {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== BENEFITS ========== */
+        .benefits {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        .benefits .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .benefits .section-desc {
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .benefit-card {
+            display: flex;
+            gap: 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 36px;
+            transition: all 0.4s ease;
+        }
+
+        .benefit-card:hover {
+            border-color: rgba(108, 60, 225, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .benefit-icon {
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .benefit-card h4 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .benefit-card p {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ========== QUOTE SECTION ========== */
+        .quote-section {
+            padding: 100px 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .quote-section .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .quote-box {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px;
+            background: linear-gradient(135deg, rgba(108, 60, 225, 0.08), rgba(6, 214, 160, 0.08));
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .quote-mark {
+            font-size: 4rem;
+            line-height: 1;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .quote-text {
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        .quote-author {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .quote-author strong {
+            color: var(--accent);
+        }
+
+        /* ========== FAQ ========== */
+        .faq {
+            padding: 120px 0;
+            position: relative;
+        }
+
+        .faq .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .faq .section-desc {
+            margin: 0 auto;
+        }
+
+        .faq-list {
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 24px 0;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .faq-question:hover {
+            color: var(--primary-light);
+        }
+
+        .faq-toggle {
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            transition: transform 0.3s, color 0.3s;
+            flex-shrink: 0;
+            margin-left: 16px;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+            color: var(--accent);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .faq-answer-inner {
+            padding-bottom: 24px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+        }
+
+        /* ========== CTA ========== */
+        .cta {
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cta .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .cta p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 540px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            padding: 60px 0 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ========== MOBILE MENU ========== */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(11, 13, 23, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--accent);
+        }
+
+        .mobile-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            font-size: 2rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .terminal {
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            .what-is .container {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+                margin: 0 auto;
+            }
+
+            .tools-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .hero {
+                padding: 100px 0 60px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .quote-box {
+                padding: 36px 24px;
+            }
+
+            .benefit-card {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            section {
+                padding: 80px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ========== SMOOTH SCROLL INDICATOR ========== */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            animation: bounceDown 2s infinite;
+        }
+
+        .scroll-indicator .arrow {
+            width: 24px;
+            height: 24px;
+            border-right: 2px solid var(--text-dim);
+            border-bottom: 2px solid var(--text-dim);
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounceDown {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#" class="logo">&lt;<span>Vibe</span>/&gt;</a>
+            <ul class="nav-links">
+                <li><a href="#what-is">바이브 코딩이란</a></li>
+                <li><a href="#how-it-works">작동 방식</a></li>
+                <li><a href="#tools">도구</a></li>
+                <li><a href="#benefits">장점</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#cta" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.88rem;">시작하기</a></li>
+            </ul>
+            <div class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-close" id="mobileClose">&times;</button>
+        <a href="#what-is" class="mobile-link">바이브 코딩이란</a>
+        <a href="#how-it-works" class="mobile-link">작동 방식</a>
+        <a href="#tools" class="mobile-link">도구</a>
+        <a href="#benefits" class="mobile-link">장점</a>
+        <a href="#faq" class="mobile-link">FAQ</a>
+        <a href="#cta" class="btn btn-primary mobile-link">시작하기</a>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="pulse"></span>
+                    새로운 개발 패러다임
+                </div>
+                <h1>
+                    코드를 쓰지 마세요.<br>
+                    <span class="gradient-text">말로 만드세요.</span>
+                </h1>
+                <p>
+                    바이브 코딩은 AI에게 자연어로 설명하면 코드가 완성되는 혁신적인 프로그래밍 방식입니다. 
+                    복잡한 문법 대신 아이디어에 집중하세요.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#how-it-works" class="btn btn-primary">
+                        작동 방식 알아보기
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#tools" class="btn btn-outline">도구 둘러보기</a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="floating-icon">&#x1F4AC;</div>
+                <div class="floating-icon">&#x2728;</div>
+                <div class="step-icon">&#x2705;</div>
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-dot red"></div>
+                        <div class="terminal-dot yellow"></div>
+                        <div class="terminal-dot green"></div>
+                        <span class="terminal-title">vibe-coding-session</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">
+                            <span class="t-prompt">User &gt;</span> <span class="t-user">"할 일 목록 앱 만들어줘. 드래그로 순서 변경 가능하게."</span>
+                        </div>
+                        <div class="terminal-line"><br></div>
+                        <div class="terminal-line">
+                            <span class="t-ai">AI &gt;</span> <span class="t-comment">// 프로젝트 구조 생성 중...</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-keyword">import</span> <span class="t-func">{ DragDropContext }</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="t-keyword">const</span> <span class="t-func">TodoApp</span> = () <span class="t-keyword">=&gt;</span> {
+                        </div>
+                        <div class="terminal-line">
+                            &nbsp;&nbsp;<span class="t-keyword">const</span> [todos, setTodos] = <span class="t-func">useState</span>([])
+                        </div>
+                        <div class="terminal-line">
+                            &nbsp;&nbsp;<span class="t-comment">// ... 전체 코드 자동 생성 완료</span>
+                        </div>
+                        <div class="terminal-line">
+                            <br><span class="t-prompt">&#x2705;</span> <span class="t-string">앱이 준비되었습니다. 미리보기를 실행합니다.</span><span class="cursor-blink"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <span>SCROLL</span>
+            <div class="arrow"></div>
+        </div>
+    </section>
+
+    <!-- STATS BAR -->
+    <section class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item reveal">
+                    <h3 class="gradient-text" data-count="10">10x</h3>
+                    <p>개발 속도 향상</p>
+                </div>
+                <div class="stat-item reveal reveal-delay-1">
+                    <h3 class="gradient-text-2">70%+</h3>
+                    <p>개발자 채택률 증가세</p>
+                </div>
+                <div class="stat-item reveal reveal-delay-2">
+                    <h3 class="gradient-text">2025</h3>
+                    <p>Andrej Karpathy 최초 제안</p>
+                </div>
+                <div class="stat-item reveal reveal-delay-3">
+                    <h3 class="gradient-text-2">&#x221E;</h3>
+                    <p>만들 수 있는 가능성</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHAT IS SECTION -->
+    <section class="what-is" id="what-is">
+        <div class="blob"></div>
+        <div class="container">
+            <div class="what-is-visual reveal">
+                <div class="comparison-card old">
+                    <div class="card-label">&#x274C; 기존 방식 — Traditional Coding</div>
+                    <div class="card-code">
+                        <span class="t-comment">// 문법을 외우고, 디버깅하고, 스택오버플로 검색...</span><br>
+                        <span class="t-keyword">function</span> <span class="t-func">sortArray</span>(arr) {<br>
+                        &nbsp;&nbsp;<span class="t-keyword">return</span> arr.<span class="t-func">sort</span>((a, b) =&gt; a - b);<br>
+                        }<br>
+                        <span class="t-comment">// 이게 맞나...? 🤔</span>
+                    </div>
+                </div>
+
+                <div class="arrow-between">&#x2B07;&#xFE0F;</div>
+
+                <div class="comparison-card new">
+                    <div class="card-label">&#x2705; 바이브 코딩 — Vibe Coding</div>
+                    <div class="card-code">
+                        <span class="t-user">"숫자 배열을 작은 수부터 큰 수 순으로 정렬하는 함수 만들어줘"</span><br><br>
+                        <span class="t-ai">AI:</span> <span class="t-string">완성된 코드 + 테스트 + 설명까지 즉시 제공</span> &#x2728;
+                    </div>
+                </div>
+            </div>
+
+            <div class="what-is-content reveal reveal-delay-2">
+                <span class="section-label">What is Vibe Coding</span>
+                <h2 class="section-title">
+                    코딩의 새로운<br>
+                    <span class="gradient-text">패러다임 전환</span>
+                </h2>
+                <p class="section-desc" style="margin-bottom: 24px;">
+                    바이브 코딩(Vibe Coding)은 2025년 초 OpenAI 공동 창업자 <strong style="color: var(--accent);">Andrej Karpathy</strong>가 
+                    제안한 개념으로, AI에게 자연어로 의도를 전달하면 실행 가능한 코드로 변환하는 프로그래밍 방식입니다.
+                </p>
+                <p class="section-desc" style="margin-bottom: 24px;">
+                    개발자는 코드의 세부 구현 대신 <strong style="color: var(--text-primary);">"무엇을 만들 것인가"</strong>에 집중하고, 
+                    AI가 <strong style="color: var(--text-primary);">"어떻게 만들 것인가"</strong>를 담당합니다.
+                </p>
+                <p class="section-desc">
+                    프로그래밍 경험이 없어도 앱, 웹사이트, 자동화 도구 등을 만들 수 있는 시대가 열렸습니다.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">How It Works</span>
+                <h2 class="section-title">
+                    3단계로 완성되는 <span class="gradient-text">바이브 코딩</span>
+                </h2>
+                <p class="section-desc">
+                    복잡한 설정 없이, 아이디어에서 완성까지 단 세 단계면 충분합니다.
+                </p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card reveal">
+                    <div class="step-icon">&#x1F4AD;</div>
+                    <div class="step-number">01</div>
+                    <h3>아이디어를 말하세요</h3>
+                    <p>
+                        만들고 싶은 것을 자연어로 설명합니다. 
+                        "날씨 앱을 만들어줘", "이 데이터를 차트로 보여줘"처럼 평소 말하듯이 입력하면 됩니다.
+                    </p>
+                </div>
+
+                <div class="step-card reveal reveal-delay-1">
+                    <div class="step-icon">&#x1F916;</div>
+                    <div class="step-number">02</div>
+                    <h3>AI가 코드를 생성합니다</h3>
+                    <p>
+                        AI가 의도를 분석하고 최적의 코드를 작성합니다.
+                        프로젝트 구조, 스타일링, 로직까지 한 번에 생성되어 즉시 실행 가능한 결과물이 만들어집니다.
+                    </p>
+                </div>
+
+                <div class="step-card reveal reveal-delay-2">
+                    <div class="step-icon">&#x1F680;</div>
+                    <div class="step-number">03</div>
+                    <h3>반복하며 완성하세요</h3>
+                    <p>
+                        결과를 확인하고 피드백을 주세요. 
+                        "버튼 색상을 파란색으로 바꿔줘", "로딩 애니메이션 추가해줘"처럼 대화하며 점진적으로 완성합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section class="tools" id="tools">
+        <div class="blob"></div>
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Tools & Platforms</span>
+                <h2 class="section-title">
+                    바이브 코딩을 위한 <span class="gradient-text">핵심 도구들</span>
+                </h2>
+                <p class="section-desc">
+                    각 도구마다 고유한 강점이 있습니다. 목적에 맞는 도구를 선택하세요.
+                </p>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card reveal">
+                    <div class="tool-logo" style="background: linear-gradient(135deg, #1a1a2e, #16213e);">
+                        <span style="font-size: 1.8rem;">&#x25B6;</span>
+                    </div>
+                    <h4>Cursor</h4>
+                    <p>AI 네이티브 코드 에디터. VS Code 기반으로 친숙하면서도 강력한 AI 에이전트 모드 제공.</p>
+                    <span class="tool-tag" style="background: rgba(108, 60, 225, 0.12); color: var(--primary-light);">IDE</span>
+                </div>
+
+                <div class="tool-card reveal reveal-delay-1">
+                    <div class="tool-logo" style="background: linear-gradient(135deg, #0D1117, #1a2332);">
+                        <span style="font-size: 1.8rem;">&#x1F47E;</span>
+                    </div>
+                    <h4>GitHub Copilot</h4>
+                    <p>GitHub와 통합된 AI 코딩 어시스턴트. 코드 자동완성과 채팅 기반 개발을 지원합니다.</p>
+                    <span class="tool-tag" style="background: rgba(6, 214, 160, 0.12); color: var(--accent);">어시스턴트</span>
+                </div>
+
+                <div class="tool-card reveal reveal-delay-2">
+                    <div class="tool-logo" style="background: linear-gradient(135deg, #1e1e3f, #2d2d5e);">
+                        <span style="font-size: 1.8rem;">&#x1F3AE;</span>
+                    </div>
+                    <h4>Replit</h4>
+                    <p>브라우저에서 바로 시작. 코딩 환경 설정 없이 자연어로 앱을 만들고 즉시 배포할 수 있습니다.</p>
+                    <span class="tool-tag" style="background: rgba(236, 72, 153, 0.12); color: #EC4899;">올인원</span>
+                </div>
+
+                <div class="tool-card reveal reveal-delay-3">
+                    <div class="tool-logo" style="background: linear-gradient(135deg, #1a1a1a, #2d2d2d);">
+                        <span style="font-size: 1.8rem;">&#x1F4BB;</span>
+                    </div>
+                    <h4>Claude Code</h4>
+                    <p>터미널에서 직접 Claude와 대화하며 코딩. 에이전틱 코딩으로 복잡한 작업도 자동 처리합니다.</p>
+                    <span class="tool-tag" style="background: rgba(59, 130, 246, 0.12); color: #3B82F6;">CLI</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="benefits" id="benefits">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Benefits</span>
+                <h2 class="section-title">
+                    바이브 코딩이 가져올 <span class="gradient-text">변화</span>
+                </h2>
+                <p class="section-desc">
+                    단순히 빠른 코딩이 아닙니다. 소프트웨어를 만드는 방식 자체가 바뀝니다.
+                </p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card reveal">
+                    <div class="benefit-icon" style="background: rgba(108, 60, 225, 0.12);">&#x26A1;</div>
+                    <div>
+                        <h4>압도적인 속도</h4>
+                        <p>몇 시간이 걸리던 작업을 몇 분으로 단축합니다. 프로토타입부터 MVP까지, 아이디어를 즉시 현실로 만듭니다.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-card reveal reveal-delay-1">
+                    <div class="benefit-icon" style="background: rgba(6, 214, 160, 0.12);">&#x1F30D;</div>
+                    <div>
+                        <h4>진입 장벽 제거</h4>
+                        <p>프로그래밍 언어를 몰라도 됩니다. 디자이너, 기획자, 창업가 누구나 자신의 아이디어를 직접 구현할 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-card reveal reveal-delay-2">
+                    <div class="benefit-icon" style="background: rgba(236, 72, 153, 0.12);">&#x1F3AF;</div>
+                    <div>
+                        <h4>아이디어에 집중</h4>
+                        <p>문법 오류와 디버깅에 시간을 뺏기지 않습니다. 진짜 중요한 것 — 무엇을 만들 것인가에 에너지를 쏟으세요.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-card reveal reveal-delay-3">
+                    <div class="benefit-icon" style="background: rgba(59, 130, 246, 0.12);">&#x1F504;</div>
+                    <div>
+                        <h4>빠른 반복과 실험</h4>
+                        <p>대화하듯 피드백을 주고 즉시 수정합니다. 여러 방향을 빠르게 시도하고 최적의 결과를 찾을 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUOTE -->
+    <section class="quote-section reveal">
+        <div class="container">
+            <div class="quote-box">
+                <div class="quote-mark">"</div>
+                <p class="quote-text">
+                    나는 코드를 보지 않는다. 그냥 실행하고, 결과를 보고, 분위기(vibe)로 판단한다. 
+                    완전히 느낌에 의존하는 코딩이다.
+                </p>
+                <p class="quote-author">
+                    <strong>Andrej Karpathy</strong><br>
+                    전 OpenAI / Tesla AI 디렉터, 바이브 코딩 제안자
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">FAQ</span>
+                <h2 class="section-title">
+                    자주 묻는 <span class="gradient-text">질문</span>
+                </h2>
+                <p class="section-desc">
+                    바이브 코딩에 대해 가장 많이 궁금해하시는 내용을 모았습니다.
+                </p>
+            </div>
+
+            <div class="faq-list reveal">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        바이브 코딩을 하려면 프로그래밍을 알아야 하나요?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            전혀 몰라도 시작할 수 있습니다. 자연어로 원하는 것을 설명하면 AI가 코드를 생성합니다. 
+                            다만, 기본적인 프로그래밍 개념을 알면 AI와 더 효과적으로 소통할 수 있고, 
+                            생성된 코드를 검증하는 데에도 도움이 됩니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        바이브 코딩으로 실제 서비스를 만들 수 있나요?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            네, 가능합니다. 간단한 웹사이트부터 CRUD 앱, 자동화 도구, 프로토타입 등 
+                            다양한 서비스를 만들 수 있습니다. 다만 대규모 프로덕션 레벨의 서비스를 위해서는 
+                            보안, 성능, 확장성 등을 전문 개발자가 검토하는 것이 권장됩니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        기존 개발자에게도 바이브 코딩이 유용한가요?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            매우 유용합니다. 반복적인 보일러플레이트 코드 작성, 테스트 생성, 리팩토링, 
+                            새로운 라이브러리 학습 등에서 생산성을 크게 높일 수 있습니다. 
+                            경험 있는 개발자는 AI가 생성한 코드를 검증하고 최적화하는 데 강점을 가지므로, 
+                            더욱 효과적으로 활용할 수 있습니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        바이브 코딩의 한계는 무엇인가요?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            AI가 생성한 코드에 보안 취약점이 있을 수 있고, 복잡한 비즈니스 로직이나 
+                            대규모 시스템 아키텍처 설계에는 한계가 있습니다. 또한 AI의 환각(hallucination) 현상으로 
+                            존재하지 않는 API를 사용하거나 잘못된 로직을 생성할 수 있어, 
+                            결과물에 대한 검증이 항상 필요합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        바이브 코딩 때문에 개발자가 사라지나요?
+                        <span class="faq-toggle">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            아닙니다. 바이브 코딩은 개발자를 대체하는 것이 아니라 역할을 진화시킵니다. 
+                            개발자의 역할이 "코드를 작성하는 사람"에서 "AI를 효과적으로 지휘하고, 
+                            아키텍처를 설계하며, 코드 품질을 보장하는 사람"으로 확장됩니다. 
+                            오히려 더 높은 수준의 문제 해결에 집중할 수 있게 됩니다.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="cta">
+        <div class="blob blob-1"></div>
+        <div class="container">
+            <span class="section-label reveal">Get Started</span>
+            <h2 class="reveal">
+                지금 바로<br>
+                <span class="gradient-text">바이브 코딩을 시작하세요</span>
+            </h2>
+            <p class="reveal">
+                아이디어만 있으면 됩니다. 코드는 AI가 쓸 테니까요.<br>
+                당신의 첫 번째 프로젝트를 만들어 보세요.
+            </p>
+            <div class="cta-buttons reveal">
+                <a href="https://cursor.com" target="_blank" class="btn btn-primary">
+                    Cursor 시작하기
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+                <a href="https://replit.com" target="_blank" class="btn btn-outline">
+                    Replit 시작하기
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 Vibe Coding Landing Page. Made with AI + Human Creativity.</p>
+                <div class="footer-links">
+                    <a href="#hero">맨 위로</a>
+                    <a href="#what-is">바이브 코딩이란</a>
+                    <a href="#tools">도구</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // ========== NAVBAR SCROLL EFFECT ==========
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            lastScroll = currentScroll;
+        });
+
+        // ========== MOBILE MENU ==========
+        const mobileToggle = document.getElementById('mobileToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileClose = document.getElementById('mobileClose');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileToggle.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        mobileClose.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // ========== SCROLL REVEAL ANIMATION ==========
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // ========== FAQ ACCORDION ==========
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+                
+                // Close all items
+                faqItems.forEach(i => i.classList.remove('active'));
+                
+                // Toggle clicked item
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // ========== SMOOTH SCROLL FOR ALL ANCHOR LINKS ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // ========== PARALLAX BLOBS ON MOUSE MOVE ==========
+        document.addEventListener('mousemove', (e) => {
+            const blobs = document.querySelectorAll('.blob');
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+
+            blobs.forEach((blob, index) => {
+                const speed = (index + 1) * 15;
+                blob.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+                blob.style.transition = 'transform 0.3s ease-out';
+            });
+        });
+
+        // ========== TYPING CURSOR RESTART ANIMATION ==========
+        // Re-trigger terminal animation when hero comes back into view
+        const terminalBody = document.querySelector('.terminal-body');
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const lines = terminalBody.querySelectorAll('.terminal-line');
+                    lines.forEach(line => {
+                        line.style.animation = 'none';
+                        line.offsetHeight; // trigger reflow
+                        line.style.animation = '';
+                    });
+                }
+            });
+        }, { threshold: 0.3 });
+
+        heroObserver.observe(document.querySelector('.hero'));
+
+        // ========== NAVBAR ACTIVE LINK HIGHLIGHT ==========
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 120;
+                if (window.pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.color = '';
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.style.color = 'var(--text-primary)';
+                }
+            });
+        });
+
+        // ========== STAT COUNTER ANIMATION ==========
+        const statItems = document.querySelectorAll('.stat-item');
+        let statAnimated = false;
+
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !statAnimated) {
+                    statAnimated = true;
+                    // Simple fade-in is handled by reveal class
+                }
+            });
+        }, { threshold: 0.5 });
+
+        statItems.forEach(item => statObserver.observe(item));
+    </script>
+
+</body>
+</html>
